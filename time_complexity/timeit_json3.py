@@ -61,34 +61,49 @@ def item_dumps(count, repeat):
 
 def item_loads(count, repeat):
     item_data = {}
+    first_duration = None
+
     for i in range(count):
-        item_data['key[%s]' % (i+1)] = '0' * 40
+        item_data[f'key{i}'] = '0' * 40
         json_data = json_dumps(item_data)
+
         start = timeit.default_timer()
-        for _ in range(1, repeat):
+        for _ in range(repeat):
             json_loads(json_data)
-        end = timeit.default_timer()
-        print('%2s item : %s' % (i+1, end - start))
+        duration = timeit.default_timer() - start
+
+        if first_duration is None:
+            first_duration = duration
+            continue
+
+        delta = (duration - first_duration) / i
+
+        print('%2s item : %s : %s' % (i, duration, delta))
 
 
-print("measure len_dumps start")
-len_dumps(101, 100000)
-print("measure len_dumps end")
+def main():
+    # print("measure len_dumps start")
+    # len_dumps(100, 100000)
+    # print("measure len_dumps end")
+    #
+    # print('-' * 100)
+    #
+    # print("measure len_loads start")
+    # len_loads(100, 100000)
+    # print("measure len_loads end")
+    #
+    # print('-' * 100)
+    #
+    # print("measure item_dumps start")
+    # item_dumps(100, 10000)
+    # print("measure item_dumps end")
+    #
+    # print('-' * 100)
 
-print('-' * 100)
+    print("measure item_loads start")
+    item_loads(100, 10000)
+    print("measure item_loads end")
 
-print("measure len_loads start")
-len_loads(101, 100000)
-print("measure len_loads end")
 
-print('-' * 100)
-
-print("measure item_dumps start")
-item_dumps(51, 10000)
-print("measure item_dumps end")
-
-print('-' * 100)
-
-print("measure item_loads start")
-item_loads(51, 10000)
-print("measure item_loads end")
+if __name__ == '__main__':
+    main()
