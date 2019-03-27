@@ -24,39 +24,65 @@ def json_loads(src: str, **kwargs) -> Any:
 
 
 def len_dumps(count, repeat):
+    first_duration = None
+
     for i in range(count):
-        len_data = {
-            'key': '0' * (i+1)
-            }
+        len_data = {'key': '0' * i}
+
         start = timeit.default_timer()
         for _ in range(repeat):
             json_dumps(len_data)
-        end = timeit.default_timer()
-        print('%3s : %s' % (i+1, end - start))
+        duration = timeit.default_timer() - start
+
+        if first_duration is None:
+            first_duration = duration
+            continue
+
+        delta = (duration - first_duration) / i
+
+        print(f'{i:>3} : {duration} : {delta}')
 
 
 def len_loads(count, repeat):
+    first_duration = None
+
     for i in range(count):
-        len_data = {
-            'key': '0' * (i+1)
-            }
+        len_data = {'key': '0' * i}
         json_data = json_dumps(len_data)
+
         start = timeit.default_timer()
         for _ in range(repeat):
             json_loads(json_data)
-        end = timeit.default_timer()
-        print('%3s : %s' % (i+1, end - start))
+        duration = timeit.default_timer() - start
+
+        if first_duration is None:
+            first_duration = duration
+            continue
+
+        delta = (duration - first_duration) / i
+
+        print(f'{i:>3} : {duration} : {delta}')
 
 
 def item_dumps(count, repeat):
     item_data = {}
+    first_duration = None
+
     for i in range(count):
-        item_data['key[%s]' % (i+1)] = '0' * 40
+        item_data[f'key{i}'] = '0' * 40
+
         start = timeit.default_timer()
-        for _ in range(1, repeat):
+        for _ in range(repeat):
             json_dumps(item_data)
-        end = timeit.default_timer()
-        print('%2s item : %s' % (i+1, end - start))
+        duration = timeit.default_timer() - start
+
+        if first_duration is None:
+            first_duration = duration
+            continue
+
+        delta = (duration - first_duration) / i
+
+        print(f'{i:>2} item : {duration} : {delta}')
 
 
 def item_loads(count, repeat):
@@ -78,27 +104,27 @@ def item_loads(count, repeat):
 
         delta = (duration - first_duration) / i
 
-        print('%2s item : %s : %s' % (i, duration, delta))
+        print(f'{i:>2} item : {duration} : {delta}')
 
 
 def main():
-    # print("measure len_dumps start")
-    # len_dumps(100, 100000)
-    # print("measure len_dumps end")
-    #
-    # print('-' * 100)
-    #
-    # print("measure len_loads start")
-    # len_loads(100, 100000)
-    # print("measure len_loads end")
-    #
-    # print('-' * 100)
-    #
-    # print("measure item_dumps start")
-    # item_dumps(100, 10000)
-    # print("measure item_dumps end")
-    #
-    # print('-' * 100)
+    print("measure len_dumps start")
+    len_dumps(100, 100000)
+    print("measure len_dumps end")
+
+    print('-' * 100)
+
+    print("measure len_loads start")
+    len_loads(100, 100000)
+    print("measure len_loads end")
+
+    print('-' * 100)
+
+    print("measure item_dumps start")
+    item_dumps(100, 10000)
+    print("measure item_dumps end")
+
+    print('-' * 100)
 
     print("measure item_loads start")
     item_loads(100, 10000)
